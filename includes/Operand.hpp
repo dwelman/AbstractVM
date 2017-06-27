@@ -16,7 +16,6 @@ template <typename T>
 class Operand : public IOperand
 {
 private:
-//	static OperandFactory	faco
 	T 						val;
 	const eOperandType		type;
 	std::string				str;
@@ -314,12 +313,5 @@ IOperand const		*doModulo( IOperand const & o1, IOperand const & o2 )
 		}
 	}
 }
-
-/*
-std::ostream& operator<<(std::ostream& os, const IOperand& dt)
-{
-	os << dt.toString();
-}
-*/
 
 #endif //AVM_INT8_HPP

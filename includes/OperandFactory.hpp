@@ -4,7 +4,6 @@
 #pragma once
 
 #include <Operand.hpp>
-#include <functional>
 #include <iostream>
 
 class OperandFactory;

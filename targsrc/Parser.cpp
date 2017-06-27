@@ -93,7 +93,7 @@ void Parser::assert()
     {
 
     }
-    else
+  //  else
     {
         throw AssertNotTrueException();
     }
