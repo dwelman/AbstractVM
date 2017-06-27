@@ -6,6 +6,7 @@
 int main(int argc, char **argv)
 {
     std::string     line;
+    Parser          parser;
 
     if (argc > 1)
     {
@@ -15,11 +16,14 @@ int main(int argc, char **argv)
     {
         while (getline(std::cin, line))
         {
-            std::cout << line << std::endl;
             line = Util::String::Trim(line, " \n\t");
             if (line == ";;")
             {
-                exit(-1);
+                break;
+            }
+            if (parser.ParseLine(line) == false)
+            {
+                break;
             }
         }
     }

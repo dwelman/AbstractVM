@@ -31,7 +31,7 @@ std::string Util::String::Trim(const std::string & str, const std::string & trim
     return (TrimLeft(TrimRight(str, trim), trim));
 }
 
-std::vector<std::string> Util::String::Strsplit(const std::string &str, char delim, bool useQuotes)
+std::vector<std::string> Util::String::Strsplit(const std::string &str, std::string delim, bool useQuotes)
 {
     std::vector<std::string> ret;
     int i = 0;
@@ -44,22 +44,25 @@ std::vector<std::string> Util::String::Strsplit(const std::string &str, char del
         {
             foundQuotation = !foundQuotation;
         }
-        if (str[i] == delim)
+        for (int k = 0; k < delim.size(); k++)
         {
-            if (useQuotes && foundQuotation)
+            if (str[i] == delim[k])
             {
-                i++;
-                continue;
-            }
-            if ((i - front) != 0)
-            {
-                std::string temp = str.substr(front, i - front);
-                if (!temp.empty())
+                if (useQuotes && foundQuotation)
                 {
-                    ret.push_back(temp);
+                    i++;
+                    continue;
                 }
+                if ((i - front) != 0)
+                {
+                    std::string temp = str.substr(front, i - front);
+                    if (!temp.empty())
+                    {
+                        ret.push_back(temp);
+                    }
+                }
+                front = i + 1;
             }
-            front = i + 1;
         }
         i++;
     }
