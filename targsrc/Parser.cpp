@@ -6,7 +6,18 @@
 
 Parser::Parser()
 {
-
+    operations["push"] = &Parser::push;
+    operations["pop"] = &Parser::pop;
+    operations["dump"] = &Parser::dump;
+    operations["assert"] = &Parser::assert;
+    operations["add"] = &Parser::add;
+    operations["sub"] = &Parser::sub;
+    operations["mul"] = &Parser::mul;
+    operations["div"] = &Parser::div;
+    operations["mod"] = &Parser::mod;
+    operations["print"] = &Parser::print;
+    operations["exit"] = &Parser::exit;
+    line = 0;
 }
 
 Parser::~Parser()
@@ -16,20 +27,51 @@ Parser::~Parser()
 
 bool Parser::ParseLine(const std::string &str)
 {
-    std::vector<std::string>    tokens = Util::String::Strsplit(str, " \n\t", false);
-    if (tokens.size() > 0)
-    {
-        if (tokens[0][0] != ';')
-        {
+    std::vector<std::string>    tokens = Util::String::Strsplit(str, " \t", false);
 
+    line++;
+    try
+    {
+        if (tokens.size() > 0)
+        {
+            if (tokens[0][0] != ';')
+            {
+                auto function = operations.find(tokens[0]);
+                if (function != operations.end())
+                {
+                    if (tokens.size() > 1)
+                    {
+                        std::stringstream ss;
+                        for (unsigned int k = 1; k < tokens.size(); k++)
+                        {
+                            ss << tokens[k];
+                        }
+                        value = ss.str();
+                    }
+                    (*this.*function->second)();
+                }
+                else
+                {
+                    throw UnknownInstructionException(tokens[0]);
+                }
+            }
         }
+        return (true);
     }
-    return (true);
+    catch (std::exception &e)
+    {
+        std::cout << "Line " << line << " : Error : " << e.what() << std::endl;
+        return (false);
+    }
 }
 
 void Parser::push()
 {
-
+    if (value.empty())
+    {
+        throw SyntaxErrorException();
+    }
+    //Run some magic to turn value into an actual number
 }
 
 void Parser::pop()
@@ -47,32 +89,54 @@ void Parser::dump()
 
 void Parser::assert()
 {
+    //if (stack.size() > 0)
+    {
 
+    }
+    else
+    {
+        throw AssertNotTrueException();
+    }
 }
 
 void Parser::add()
 {
-
+    //if (stack.size() < 2)
+    {
+        throw NotEnoughValuesOnStackForOperationException();
+    }
 }
 
 void Parser::sub()
 {
-
+    //if (stack.size() < 2)
+    {
+        throw NotEnoughValuesOnStackForOperationException();
+    }
 }
 
 void Parser::mul()
 {
-
+    //if (stack.size() < 2)
+    {
+        throw NotEnoughValuesOnStackForOperationException();
+    }
 }
 
 void Parser::div()
 {
-
+    //if (stack.size() < 2)
+    {
+        throw NotEnoughValuesOnStackForOperationException();
+    }
 }
 
 void Parser::mod()
 {
-
+    //if (stack.size() < 2)
+    {
+        throw NotEnoughValuesOnStackForOperationException();
+    }
 }
 
 void Parser::print()
@@ -82,18 +146,13 @@ void Parser::print()
 
 void Parser::exit()
 {
-
-}
-
-Parser::SyntaxErrorException::SyntaxErrorException(int l) : line(l)
-{
+    //clear stack
+    line = 0;
 }
 
 const char *Parser::SyntaxErrorException::what() const throw()
 {
-    std::stringstream ss;
-    ss << "Syntax error: Line " << line;
-    return (ss.str().c_str());
+    return ("Syntax error");
 }
 
 Parser::UnknownInstructionException::UnknownInstructionException(std::string const &e) : instruction(e)

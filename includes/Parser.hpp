@@ -12,6 +12,7 @@ private:
 
     typedef void (Parser::*operation)();
     std::map<std::string, Parser::operation> operations;
+    std::string value;
 
     void push();
     void pop();
@@ -24,13 +25,12 @@ private:
     void mod();
     void print();
     void exit();
+
+    unsigned int line;
 public:
     class SyntaxErrorException : public std::exception
     {
-    private:
-        int     line;
     public:
-        SyntaxErrorException(int l);
         virtual const char  *what() const throw();
     };
 
