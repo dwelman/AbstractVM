@@ -25,6 +25,66 @@ private:
     void print();
     void exit();
 public:
+    class SyntaxErrorException : public std::exception
+    {
+    private:
+        int     line;
+    public:
+        SyntaxErrorException(int l);
+        virtual const char  *what() const throw();
+    };
+
+    class UnknownInstructionException : public std::exception
+    {
+    private:
+        std::string instruction;
+    public:
+        UnknownInstructionException(std::string const &i);
+        virtual const char  *what() const throw();
+    };
+
+    class ValueOverflowException : public std::exception
+    {
+    public:
+        virtual const char  *what() const throw();
+    };
+
+    class ValueUnderflowException : public std::exception
+    {
+    public:
+        virtual const char  *what() const throw();
+    };
+
+    class EmptyStackPopException : public std::exception
+    {
+    public:
+        virtual const char  *what() const throw();
+    };
+
+    class DivisionByZeroException : public std::exception
+    {
+    public:
+        virtual const char  *what() const throw();
+    };
+
+    class NoExitException : public std::exception
+    {
+    public:
+        virtual const char  *what() const throw();
+    };
+
+    class AssertNotTrueException : public std::exception
+    {
+    public:
+        virtual const char  *what() const throw();
+    };
+
+    class NotEnoughValuesOnStackForOperationException : public std::exception
+    {
+    public:
+        virtual const char  *what() const throw();
+    };
+
     Parser();
     ~Parser();
     bool    ParseLine(const std::string &str);
