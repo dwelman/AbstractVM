@@ -3,6 +3,7 @@
 #include <string>
 #include <deque>
 #include <map>
+#include "IOperand.hpp"
 
 class Parser
 {
@@ -13,6 +14,8 @@ private:
     typedef void (Parser::*operation)();
     std::map<std::string, Parser::operation> operations;
     std::string value;
+
+	std::deque<IOperand>	stack;
 
     void push();
     void pop();
