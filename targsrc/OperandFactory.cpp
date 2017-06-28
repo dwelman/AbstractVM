@@ -26,7 +26,7 @@ IOperand const *OperandFactory::createFloat(std::string const &value) const
 
 IOperand const *OperandFactory::createDouble(std::string const &value) const
 {
-	return (new Operand<double>(TFLOAT, std::stod(value)));
+	return (new Operand<double>(TDOUBLE, std::stod(value)));
 }
 
 OperandFactory::OperandFactory()

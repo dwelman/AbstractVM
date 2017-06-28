@@ -7,25 +7,38 @@
 
 #include <cstdint>
 #include <iostream>
+#include <float.h>
+#include <cmath>
+#include <Parser.hpp>
 #include "IOperand.hpp"
 
-template <typename T1, typename T2>
-IOperand const		*doModulo( IOperand const & o1, IOperand const & o2 );
+enum eOperation
+{
+	Sum,
+	Difference,
+ 	Product,
+ 	Quotient,
+  	Modulo,
+};
 
 template <typename T>
 class Operand : public IOperand
 {
 private:
-	T 						val;
+	const T 				val;
 	const eOperandType		type;
 	std::string				str;
 
 	Operand( void )	{}
-public:
 
+public:
 	Operand(eOperandType _type, T _val) : type(_type), val(_val)
 	{
 		str = std::to_string(val);
+	}
+
+	Operand(Operand &src) : type(src.type), val(src.val), str(src.str)
+	{
 	}
 
 	void	setVal(T val)
@@ -43,10 +56,12 @@ public:
 		return (type);
 	}
 
-	inline eOperandType getRetType(IOperand const & rhs )
+	inline eOperandType getRetType(IOperand const & rhs ) const
 	{
 		eOperandType retType;
 
+		if (type == rhs.getType())
+			return (type);
 		if (getPrecision() == rhs.getPrecision())
 		{
 			if (type == TDOUBLE || rhs.getType() == TDOUBLE)
@@ -59,213 +74,168 @@ public:
 		else
 			return (( getPrecision() > rhs.getPrecision() ) ? type : rhs.getType());
 	}
+
+	template <typename T1>
+	T1				doOp(T1 v1, eOperation e, eOperandType restype) const
+	{
+		T1			ret;
+
+		switch (e)
+		{
+			case Sum :
+				if (restype == TFLOAT || restype == TDOUBLE)
+				{
+					long double lim = val + v1;
+					checkLim(lim, restype);
+				}
+				else
+				{
+					int64_t lim = val + v1;
+					checkLim(lim, restype);
+				}
+				ret = val + v1;
+				break;
+			case Difference :
+				if (restype == TFLOAT || restype == TDOUBLE)
+				{
+					long double lim = val - v1;
+					checkLim(lim, restype);
+				}
+				else
+				{
+					int64_t lim = val - v1;
+					checkLim(lim, restype);
+				}
+				ret = val - v1;
+				break;
+			case Product :
+				if (restype == TFLOAT || restype == TDOUBLE)
+				{
+					long double lim = val * v1;
+					checkLim(lim, restype);
+				}
+				else
+				{
+					int64_t lim = val * v1;
+					checkLim(lim, restype);
+				}
+				ret = val * v1;
+				break;
+			case Quotient :
+				if (v1 == 0)
+					throw (Parser::DivisionByZeroException());
+				if (restype == TFLOAT || restype == TDOUBLE)
+				{
+					long double lim = val / v1;
+					checkLim(lim, restype);
+				}
+				else
+				{
+					int64_t lim = val / v1;
+					checkLim(lim, restype);
+				}
+				ret = val / v1;
+				break;
+			case Modulo :
+				if (v1 == 0)
+					throw (Parser::DivisionByZeroException());
+				if (restype == TFLOAT || restype == TDOUBLE)
+				{
+					long double lim = fmod(val, v1);
+					checkLim(lim, restype);
+				}
+				else
+				{
+					int64_t lim = fmod(val, v1);
+					checkLim(lim, restype);
+				}
+				ret = fmod(val, v1);
+				break;
+		}
+		return (ret);
+	}
+
+	template <typename T1>
+	void				checkLim(T1 v, eOperandType type) const
+	{
+		switch (type)
+		{
+			case TINT8 :
+				if (v > INT8_MAX)
+					throw (Parser::ValueOverflowException());
+				if (v < INT8_MIN)
+					throw (Parser::ValueUnderflowException());
+				break;
+			case TINT16 :
+				if (v > INT16_MAX)
+					throw (Parser::ValueOverflowException());
+				if (v < INT16_MIN)
+					throw (Parser::ValueUnderflowException());
+				break;
+			case TINT32 :
+				if (v > INT32_MAX)
+					throw (Parser::ValueOverflowException());
+				if (v < INT32_MIN)
+					throw (Parser::ValueUnderflowException());
+				break;
+			case TFLOAT :
+				if (v > FLT_MAX)
+					throw (Parser::ValueOverflowException());
+				if (v < -FLT_MAX)
+					throw (Parser::ValueUnderflowException());
+				break;
+			case TDOUBLE :
+				if (v > DBL_MAX)
+					throw (Parser::ValueOverflowException());
+				if (v < -DBL_MAX)
+					throw (Parser::ValueUnderflowException());
+				break;
+		}
+	}
+
+	IOperand const		*calc(IOperand const & rhs, eOperation operation) const
+	{
+		eOperandType retType = getRetType(rhs);
+		std::string	op_s = rhs.toString();
+
+		switch(retType)
+		{
+			case TINT8:
+				return (new Operand<int8_t>(retType, doOp(std::stoi(op_s), operation, retType)));
+			case TINT16:
+				return (new Operand<int16_t>(retType, doOp(std::stoi(op_s), operation, retType)));
+			case TINT32:
+				return (new Operand<int32_t>(retType, doOp(std::stoi(op_s), operation, retType)));
+			case TFLOAT:
+				return (new Operand<float>(retType, doOp(std::stof(op_s), operation, retType)));
+			case TDOUBLE:
+				return (new Operand<double>(retType, doOp(std::stod(op_s), operation, retType)));
+		}
+	}
+
 	IOperand const		*operator+( IOperand const & rhs ) const
 	{
-		std::string	op_s = rhs.toString();
-		if (getType() == rhs.getType())
-		{
-			T op ;
-			switch(type)
-			{
-				case TINT8:
-				case TINT16:
-				case TINT32:
-					return (new Operand<T>(type, val + std::stoi(op_s)));
-				case TFLOAT:
-					return (new Operand<T>(type, val + std::stof(op_s)));
-				case TDOUBLE:
-					return (new Operand<T>(type, val + std::stod(op_s)));
-			}
-			return (new Operand<T>(type, val + op));
-		}
-		else
-		{
-			eOperandType retType = getType();
-			switch(retType)
-			{
-				case TINT8:
-					return (new Operand<int8_t>(retType, val + std::stoi(op_s)));
-				case TINT16:
-					return (new Operand<int16_t>(retType, val + std::stoi(op_s)));
-				case TINT32:
-					return (new Operand<int32_t>(retType, val + std::stoi(op_s)));
-				case TFLOAT:
-					return (new Operand<float>(retType, val + std::stof(op_s)));
-				case TDOUBLE:
-					return (new Operand<double>(retType, val + std::stod(op_s)));
-			}
-
-		}
+		return (calc(rhs, Sum));
 	}
 
 	IOperand const		*operator-( IOperand const & rhs ) const
 	{
-		std::string	op_s = rhs.toString();
-		if (getType() == rhs.getType())
-		{
-			T op ;
-			switch(type)
-			{
-				case TINT8:
-				case TINT16:
-				case TINT32:
-					return (new Operand<T>(type, val - std::stoi(op_s)));
-				case TFLOAT:
-					return (new Operand<T>(type, val - std::stof(op_s)));
-				case TDOUBLE:
-					return (new Operand<T>(type, val - std::stod(op_s)));
-			}
-			return (new Operand<T>(type, val - op));
-		}
-		else
-		{
-			eOperandType retType = getType();
-			switch(retType)
-			{
-				case TINT8:
-					return (new Operand<int8_t>(retType, val - std::stoi(op_s)));
-				case TINT16:
-					return (new Operand<int16_t>(retType, val - std::stoi(op_s)));
-				case TINT32:
-					return (new Operand<int32_t>(retType, val - std::stoi(op_s)));
-				case TFLOAT:
-					return (new Operand<float>(retType, val - std::stof(op_s)));
-				case TDOUBLE:
-					return (new Operand<double>(retType, val - std::stod(op_s)));
-			}
-
-		}
+		return (calc(rhs, Difference));
 	}
 
 	IOperand const		*operator*( IOperand const & rhs ) const
 	{
-		std::string	op_s = rhs.toString();
-		if (getType() == rhs.getType())
-		{
-			T op ;
-			switch(type)
-			{
-				case TINT8:
-				case TINT16:
-				case TINT32:
-					return (new Operand<T>(type, val * std::stoi(op_s)));
-				case TFLOAT:
-					return (new Operand<T>(type, val * std::stof(op_s)));
-				case TDOUBLE:
-					return (new Operand<T>(type, val * std::stod(op_s)));
-			}
-			return (new Operand<T>(type, val * op));
-		}
-		else
-		{
-			eOperandType retType = getType();
-			switch(retType)
-			{
-				case TINT8:
-					return (new Operand<int8_t>(retType, val * std::stoi(op_s)));
-				case TINT16:
-					return (new Operand<int16_t>(retType, val * std::stoi(op_s)));
-				case TINT32:
-					return (new Operand<int32_t>(retType, val * std::stoi(op_s)));
-				case TFLOAT:
-					return (new Operand<float>(retType, val * std::stof(op_s)));
-				case TDOUBLE:
-					return (new Operand<double>(retType, val * std::stod(op_s)));
-			}
-
-		}
+		return (calc(rhs, Product));
 	}
 
 	IOperand const		*operator/( IOperand const & rhs ) const
 	{
-		std::string	op_s = rhs.toString();
-		if (getType() == rhs.getType())
-		{
-			T op ;
-			switch(type)
-			{
-				case TINT8:
-				case TINT16:
-				case TINT32:
-					return (new Operand<T>(type, val / std::stoi(op_s)));
-				case TFLOAT:
-					return (new Operand<T>(type, val / std::stof(op_s)));
-				case TDOUBLE:
-					return (new Operand<T>(type, val / std::stod(op_s)));
-			}
-			return (new Operand<T>(type, val / op));
-		}
-		else
-		{
-			eOperandType retType = getType();
-			switch(retType)
-			{
-				case TINT8:
-					return (new Operand<int8_t>(retType, val / std::stoi(op_s)));
-				case TINT16:
-					return (new Operand<int16_t>(retType, val / std::stoi(op_s)));
-				case TINT32:
-					return (new Operand<int32_t>(retType, val / std::stoi(op_s)));
-				case TFLOAT:
-					return (new Operand<float>(retType, val / std::stof(op_s)));
-				case TDOUBLE:
-					return (new Operand<double>(retType, val / std::stod(op_s)));
-			}
-
-		}
+		return (calc(rhs, Quotient));
 	}
-
-	/*IOperand const		*operator%( IOperand const & rhs ) const
-	{
-		std::string	op_s = rhs.toString();
-		if (getType() == rhs.getType())
-		{
-			T op ;
-			switch(type)
-			{
-				case TINT8:
-				case TINT16:
-				case TINT32:
-					return (new Operand<T>(type, val % std::stoi(op_s)));
-				case TFLOAT:
-				case TDOUBLE:
-					return (nullptr);
-			}
-			return (new Operand<T>(type, val % op));
-		}
-		else
-		{
-			eOperandType retType = getType();
-			switch(retType)
-			{
-				case TINT8:
-					return (new Operand<int8_t>(retType, val % std::stoi(op_s)));
-				case TINT16:
-					return (new Operand<int16_t>(retType, val % std::stoi(op_s)));
-				case TINT32:
-					return (new Operand<int32_t>(retType, val % std::stoi(op_s)));
-				case TFLOAT:
-				case TDOUBLE:
-					return (nullptr);
-			}
-
-		}
-	}
-*/
 
 	IOperand const		*operator%( IOperand const & rhs ) const
 	{
-		switch (rhs.getType())
-		{
-			case TINT8 :
-				return (doModulo<T, int8_t >(*this, rhs));
-			case TINT16 :
-				return (doModulo<T, int16_t >(*this, rhs));
-			case TINT32 :
-				return (doModulo<T, int32_t >(*this, rhs));
-			default:
-				return nullptr;
-		}
+		return (calc(rhs, Modulo));
 	}
 
 	std::string const 	&toString( void ) const
@@ -273,45 +243,5 @@ public:
 		return (str);
 	}
 };
-
-template <typename T1, typename T2>
-IOperand const		*doModulo( IOperand const & o1, IOperand const & o2 )
-{
-	std::string	op_s1 = o1.toString();
-	std::string	op_s2 = o2.toString();
-
-	if (o1.getType() == o2.getType())
-	{
-		return (new Operand<T1>(o1.getType() , std::stoi(op_s1) % std::stoi(op_s2)));
-	}
-	else
-	{
-		eOperandType retType;
-
-		if (o1.getPrecision() == o2.getPrecision())
-		{
-			if (o1.getType() == TDOUBLE || o2.getType() == TDOUBLE)
-				retType = TDOUBLE;
-			else if (o1.getType() == TFLOAT || o2.getType() == TFLOAT)
-				retType = TFLOAT;
-			else
-				retType = TINT32;
-		}
-		else
-			retType = ( o1.getPrecision() > o2.getPrecision() ) ? o1.getType() : o2.getType();
-
-		switch(retType)
-		{
-			case TINT8:
-				return (new Operand<int8_t>(retType, std::stoi(op_s1) % std::stoi(op_s2)));
-			case TINT16:
-				return (new Operand<int16_t>(retType, std::stoi(op_s1) % std::stoi(op_s2)));
-			case TINT32:
-				return (new Operand<int32_t>(retType, std::stoi(op_s1) % std::stoi(op_s2)));
-			default :
-				return (nullptr);
-		}
-	}
-}
 
 #endif //AVM_INT8_HPP
