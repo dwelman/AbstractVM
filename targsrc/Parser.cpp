@@ -117,12 +117,12 @@ void Parser::add()
     {
         throw NotEnoughValuesOnStackForOperationException();
     }
-	IOperand *a = stack.back();
+	const IOperand *a = stack.back();
 	stack.pop_back();
-	IOperand *b = stack.back();
+	const IOperand *b = stack.back();
 	stack.pop_back();
 	const IOperand *c = *b + *a;
-	//stack.push_back(c);
+	stack.push_back(c);
 }
 
 void Parser::sub()
@@ -131,6 +131,12 @@ void Parser::sub()
     {
         throw NotEnoughValuesOnStackForOperationException();
     }
+	const IOperand *a = stack.back();
+	stack.pop_back();
+	const IOperand *b = stack.back();
+	stack.pop_back();
+	const IOperand *c = *b - *a;
+	stack.push_back(c);
 }
 
 void Parser::mul()
@@ -139,6 +145,12 @@ void Parser::mul()
     {
         throw NotEnoughValuesOnStackForOperationException();
     }
+	const IOperand *a = stack.back();
+	stack.pop_back();
+	const IOperand *b = stack.back();
+	stack.pop_back();
+	const IOperand *c = *b * *a;
+	stack.push_back(c);
 }
 
 void Parser::div()
@@ -147,6 +159,16 @@ void Parser::div()
     {
         throw NotEnoughValuesOnStackForOperationException();
     }
+	const IOperand *a = stack.back();
+	//Check if a is 0
+	/*{
+	throw DivisionByZeroException();
+	}*/
+	stack.pop_back();
+	const IOperand *b = stack.back();
+	stack.pop_back();
+	const IOperand *c = *b / *a;
+	stack.push_back(c);
 }
 
 void Parser::mod()
@@ -155,6 +177,16 @@ void Parser::mod()
     {
         throw NotEnoughValuesOnStackForOperationException();
     }
+	const IOperand *a = stack.back();
+	//Check if a is 0
+	/*{
+	throw DivisionByZeroException();
+	}*/
+	stack.pop_back();
+	const IOperand *b = stack.back();
+	stack.pop_back();
+	const IOperand *c = *b % *a;
+	stack.push_back(c);
 }
 
 void Parser::print()
@@ -166,6 +198,23 @@ void Parser::exit()
 {
 	stack.clear();
     line = 0;
+}
+
+const IOperand *Parser::getValue()
+{
+	unsigned int start = value.find_first_of('(');
+	unsigned int end = value.find_first_of(')');
+	if (start >= end)
+	{
+		throw SyntaxErrorException();
+	}
+	if (start == std::string::npos || end == std::string::npos)
+	{
+		throw SyntaxErrorException();
+	}
+	std::string op = value.substr(start);
+	std::string val = value.substr(start, end - start);
+
 }
 
 const char *Parser::SyntaxErrorException::what() const throw()
