@@ -17,6 +17,8 @@ Parser::Parser()
     operations["mod"] = &Parser::mod;
     operations["print"] = &Parser::print;
     operations["exit"] = &Parser::exit;
+
+	
     line = 0;
 }
 
