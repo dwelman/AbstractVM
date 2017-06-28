@@ -85,7 +85,7 @@ void Parser::pop()
 
 void Parser::dump()
 {
-	for (unsigned int i = stack.size - 1; i > -1; i--)
+	for (unsigned int i = stack.size() - 1; i > -1; i--)
 	{
 		//std::cout << stack[i] << std::endl;
 	}
@@ -117,8 +117,12 @@ void Parser::add()
     {
         throw NotEnoughValuesOnStackForOperationException();
     }
-	//Operand a = stack.back();
-
+	IOperand *a = stack.back();
+	stack.pop_back();
+	IOperand *b = stack.back();
+	stack.pop_back();
+	const IOperand *c = *b + *a;
+	//stack.push_back(c);
 }
 
 void Parser::sub()

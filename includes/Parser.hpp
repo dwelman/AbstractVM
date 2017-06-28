@@ -15,7 +15,7 @@ private:
     std::map<std::string, Parser::operation> operations;
     std::string value;
 
-	std::deque<IOperand>	stack;
+	std::deque<IOperand*>	stack;
 
     void push();
     void pop();
