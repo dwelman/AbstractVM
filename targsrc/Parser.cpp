@@ -199,7 +199,19 @@ void Parser::mod()
 
 void Parser::print()
 {
-
+    if (stack.size() > 0)
+    {
+        if (stack.back()->getType() != TINT8)
+        {
+            throw AssertNotTrueException();
+        }
+        int i = std::stoi(stack.back()->toString());
+        std::cout << static_cast<char>(i) << std::endl;
+    }
+    else
+    {
+        throw NotEnoughValuesOnStackForOperationException();
+    }
 }
 
 void Parser::exit()
