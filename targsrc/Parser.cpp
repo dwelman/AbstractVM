@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include "Util.hpp"
+#include "OperandFactory.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -18,7 +19,11 @@ Parser::Parser()
     operations["print"] = &Parser::print;
     operations["exit"] = &Parser::exit;
 
-	
+	opTypes["int8"] = TINT8;
+    opTypes["int16"] = TINT16;
+    opTypes["int32"] = TINT32;
+    opTypes["float"] = TFLOAT;
+    opTypes["double"] = TDOUBLE;
     line = 0;
 }
 
@@ -73,7 +78,8 @@ void Parser::push()
     {
         throw SyntaxErrorException();
     }
-    //Run some magic to turn value into an actual number
+    OperandFactory fact;
+    stack.push_back(getValue());
 }
 
 void Parser::pop()
@@ -87,22 +93,22 @@ void Parser::pop()
 
 void Parser::dump()
 {
-	for (unsigned int i = stack.size() - 1; i > -1; i--)
+	for (int i = stack.size() - 1; i > -1; i--)
 	{
-		//std::cout << stack[i] << std::endl;
+		std::cout << stack[i]->toString() << std::endl;
 	}
 }
 
 void Parser::assert()
 {
-	if (value.empty)
+	if (value.empty())
 	{
 		throw SyntaxErrorException();
 	}
     if (stack.size() > 0)
     {
-		//get value
-		//if (!(value == stack.top())
+		const IOperand *val = getValue();
+		if (val->toString() != stack.back()->toString() || val->getType() != stack.back()->getType())
 		{
 			throw AssertNotTrueException();
 		}
@@ -162,10 +168,10 @@ void Parser::div()
         throw NotEnoughValuesOnStackForOperationException();
     }
 	const IOperand *a = stack.back();
-	//Check if a is 0
-	/*{
-	throw DivisionByZeroException();
-	}*/
+	if (a->toString() == "0.0" || a->toString() == "0")
+    {
+	    throw DivisionByZeroException();
+	}
 	stack.pop_back();
 	const IOperand *b = stack.back();
 	stack.pop_back();
@@ -180,10 +186,10 @@ void Parser::mod()
         throw NotEnoughValuesOnStackForOperationException();
     }
 	const IOperand *a = stack.back();
-	//Check if a is 0
-	/*{
-	throw DivisionByZeroException();
-	}*/
+    if (a->toString() == "0.0" || a->toString() == "0")
+    {
+        throw DivisionByZeroException();
+    }
 	stack.pop_back();
 	const IOperand *b = stack.back();
 	stack.pop_back();
@@ -214,9 +220,15 @@ const IOperand *Parser::getValue()
 	{
 		throw SyntaxErrorException();
 	}
-	std::string op = value.substr(start);
-	std::string val = value.substr(start, end - start);
-
+	std::string op = value.substr(0, start);
+	std::string val = value.substr(start + 1, end - start - 1);
+    auto iter = opTypes.find(op);
+    if (iter == opTypes.end())
+    {
+        throw SyntaxErrorException();
+    }
+    OperandFactory fact;
+    return (fact.createOperand(iter->second, val));
 }
 
 const char *Parser::SyntaxErrorException::what() const throw()

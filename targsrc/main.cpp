@@ -39,7 +39,7 @@ int main(int argc, char **argv)
             }
             if (parser.ParseLine(line) == false)
             {
-                break;
+                //break;
             }
         }
     }
