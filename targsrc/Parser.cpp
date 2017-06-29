@@ -76,24 +76,36 @@ void Parser::push()
 
 void Parser::pop()
 {
-    //if (stack.size() == 0)
+    if (stack.size() == 0)
     {
         throw EmptyStackPopException();
     }
+	stack.pop_back();
 }
 
 void Parser::dump()
 {
-
+	for (unsigned int i = stack.size - 1; i > -1; i--)
+	{
+		//std::cout << stack[i] << std::endl;
+	}
 }
 
 void Parser::assert()
 {
-    //if (stack.size() > 0)
+	if (value.empty)
+	{
+		throw SyntaxErrorException();
+	}
+    if (stack.size() > 0)
     {
-
+		//get value
+		//if (!(value == stack.top())
+		{
+			throw AssertNotTrueException();
+		}
     }
-  //  else
+    else
     {
         throw AssertNotTrueException();
     }
@@ -101,15 +113,17 @@ void Parser::assert()
 
 void Parser::add()
 {
-    //if (stack.size() < 2)
+    if (stack.size() < 2)
     {
         throw NotEnoughValuesOnStackForOperationException();
     }
+	//Operand a = stack.back();
+
 }
 
 void Parser::sub()
 {
-    //if (stack.size() < 2)
+    if (stack.size() < 2)
     {
         throw NotEnoughValuesOnStackForOperationException();
     }
@@ -117,7 +131,7 @@ void Parser::sub()
 
 void Parser::mul()
 {
-    //if (stack.size() < 2)
+    if (stack.size() < 2)
     {
         throw NotEnoughValuesOnStackForOperationException();
     }
@@ -125,7 +139,7 @@ void Parser::mul()
 
 void Parser::div()
 {
-    //if (stack.size() < 2)
+    if (stack.size() < 2)
     {
         throw NotEnoughValuesOnStackForOperationException();
     }
@@ -133,7 +147,7 @@ void Parser::div()
 
 void Parser::mod()
 {
-    //if (stack.size() < 2)
+    if (stack.size() < 2)
     {
         throw NotEnoughValuesOnStackForOperationException();
     }
@@ -146,7 +160,7 @@ void Parser::print()
 
 void Parser::exit()
 {
-    //clear stack
+	stack.clear();
     line = 0;
 }
 
