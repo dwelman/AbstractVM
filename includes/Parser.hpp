@@ -13,9 +13,10 @@ private:
 
     typedef void (Parser::*operation)();
     std::map<std::string, Parser::operation> operations;
+	std::map<std::string, eOperandType> opTypes;
     std::string value;
 
-	std::deque<IOperand>	stack;
+	std::deque<const IOperand*>	stack;
 
     void push();
     void pop();
@@ -30,6 +31,7 @@ private:
     void exit();
 
     unsigned int line;
+	const IOperand *getValue();
 public:
     class SyntaxErrorException : public std::exception
     {
