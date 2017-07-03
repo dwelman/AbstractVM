@@ -19,13 +19,6 @@ int main(int argc, char **argv)
     OperandFactory	fac;
     bool            hitExit = false;
 
-	const IOperand	*op1 = fac.createOperand(TINT32, "12");
-	const IOperand	*op2 = fac.createOperand(TINT32, "10");
-
-	const IOperand	*op3 = *op1 % *op2;
-
-	std::cout << "le Val : " << op3 << std::endl;
-
 	if (argc > 1)
     {
         std::ifstream    file(argv[1]);
