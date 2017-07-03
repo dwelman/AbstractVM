@@ -26,15 +26,9 @@ int main(int argc, char **argv)
         {
             while (getline(file, line))
             {
-                if (parser.ParseLine(line) == false)
-                {
-                    hitExit = true;
-                }
-                else
-                {
-                    hitExit = false;
-                }
+                parser.ParseLine(line, hitExit);
             }
+            parser.DumpExceptions();
             file.close();
             if (hitExit != true)
             {
@@ -44,7 +38,7 @@ int main(int argc, char **argv)
                 }
                 catch(std::exception &e)
                 {
-                    std::cout << e.what() << std::endl;
+                    std::cout << "Error: " << e.what() << std::endl;
                 }
             }
         }
@@ -61,6 +55,7 @@ int main(int argc, char **argv)
             line = Util::String::Trim(line, " \n\t");
             if (line == ";;")
             {
+                parser.DumpExceptions();
                 if (hitExit != true)
                 {
                     try
@@ -69,19 +64,12 @@ int main(int argc, char **argv)
                     }
                     catch(std::exception &e)
                     {
-                        std::cout << e.what() << std::endl;
+                        std::cout << "Error: " << e.what() << std::endl;
                     }
                 }
                 break;
             }
-            if (parser.ParseLine(line) == false)
-            {
-                hitExit = true;
-            }
-            else
-            {
-                hitExit = false;
-            }
+            parser.ParseLine(line, hitExit);
         }
     }
     return (0);

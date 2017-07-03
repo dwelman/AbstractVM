@@ -32,7 +32,7 @@ Parser::~Parser()
 
 }
 
-bool Parser::ParseLine(const std::string &str)
+void        Parser::ParseLine(const std::string &str, bool &hitExit)
 {
     std::vector<std::string>    tokens = Util::String::Strsplit(str, " \t", false);
 
@@ -63,13 +63,18 @@ bool Parser::ParseLine(const std::string &str)
                 }
             }
         }
-        return (true);
+        hitExit = this->hitExit;
+        this->hitExit = false;
     }
     catch (std::exception &e)
     {
-        std::cout << "Line " << line << " : Error : " << e.what() << std::endl;
-        return (false);
+        exceptions << "Line " << line << " : Error : " << e.what() << std::endl;
     }
+}
+
+void Parser::DumpExceptions()
+{
+    std::cout << exceptions.str();
 }
 
 void Parser::push()
@@ -216,6 +221,7 @@ void Parser::print()
 
 void Parser::exit()
 {
+    hitExit = true;
 	stack.clear();
     line = 0;
 }
@@ -282,7 +288,7 @@ const char *Parser::DivisionByZeroException::what() const throw()
 
 const char *Parser::NoExitException::what() const throw()
 {
-    return ("Program does not have an exit");
+    return ("Program does not have an exit command");
 }
 
 const char *Parser::AssertNotTrueException::what() const throw()

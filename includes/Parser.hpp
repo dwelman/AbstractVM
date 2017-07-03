@@ -3,6 +3,8 @@
 #include <string>
 #include <deque>
 #include <map>
+#include <vector>
+#include <sstream>
 #include "IOperand.hpp"
 
 class Parser
@@ -32,6 +34,8 @@ private:
 
     unsigned int line;
 	const IOperand *getValue();
+    bool hitExit;
+    std::stringstream   exceptions;
 public:
     class SyntaxErrorException : public std::exception
     {
@@ -92,5 +96,6 @@ public:
 
     Parser();
     ~Parser();
-    bool    ParseLine(const std::string &str);
+    void    ParseLine(const std::string &str, bool &hitExit);
+    void    DumpExceptions();
 };
