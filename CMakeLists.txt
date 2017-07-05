@@ -3,6 +3,8 @@ project(avm)
 
 set(CMAKE_CXX_STANDARD 11)
 
+set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra")
+
 set(SOURCE_FILES    targsrc/main.cpp
                     targsrc/Util.cpp
                     targsrc/Parser.cpp

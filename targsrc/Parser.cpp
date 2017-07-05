@@ -228,8 +228,8 @@ void Parser::exit()
 
 const IOperand *Parser::getValue()
 {
-	unsigned int start = value.find_first_of('(');
-	unsigned int end = value.find_first_of(')');
+	unsigned long start = value.find_first_of('(');
+	unsigned long end = value.find_first_of(')');
 	if (start >= end)
 	{
 		throw SyntaxErrorException();

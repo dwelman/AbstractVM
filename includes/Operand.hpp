@@ -32,7 +32,7 @@ private:
 	Operand( void )	{}
 
 public:
-	Operand(eOperandType _type, T _val) : type(_type), val(_val)
+	Operand(eOperandType _type, T _val) : val(_val), type(_type)
 	{
 		str = std::to_string(val);
 	}
@@ -58,8 +58,6 @@ public:
 
 	inline eOperandType getRetType(IOperand const & rhs ) const
 	{
-		eOperandType retType;
-
 		if (type == rhs.getType())
 			return (type);
 		if (getPrecision() == rhs.getPrecision())

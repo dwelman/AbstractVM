@@ -34,7 +34,7 @@ std::string Util::String::Trim(const std::string & str, const std::string & trim
 std::vector<std::string> Util::String::Strsplit(const std::string &str, std::string delim, bool useQuotes)
 {
     std::vector<std::string> ret;
-    int i = 0;
+    size_t i = 0;
     int front = 0; //Used to track current string front
     bool foundQuotation = false; //Used to track if words are within quotes
 
@@ -44,7 +44,7 @@ std::vector<std::string> Util::String::Strsplit(const std::string &str, std::str
         {
             foundQuotation = !foundQuotation;
         }
-        for (int k = 0; k < delim.size(); k++)
+        for (size_t k = 0; k < delim.size(); k++)
         {
             if (str[i] == delim[k])
             {
