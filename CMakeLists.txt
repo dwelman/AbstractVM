@@ -19,3 +19,11 @@ set(HEADER_FILES    includes/Util.hpp
 include_directories(avm includes)
 
 add_executable(avm ${SOURCE_FILES} ${HEADER_FILES})
+
+add_custom_target(re make clean
+        COMMAND make
+        )
+
+add_custom_target(fclean make clean
+        COMMAND rm -f nibbler libBasicRender.dylib libSpaceLib.dylib libSpriteRender.dylib
+        )
