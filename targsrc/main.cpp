@@ -28,7 +28,7 @@ int main(int argc, char **argv)
             {
                 parser.ParseLine(line, hitExit);
             }
-            parser.DumpExceptions();
+            parser.DumpOutput();
             file.close();
             if (hitExit != true)
             {
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
             line = Util::String::Trim(line, " \n\t");
             if (line == ";;")
             {
-                parser.DumpExceptions();
+                parser.DumpOutput();
                 if (hitExit != true)
                 {
                     try

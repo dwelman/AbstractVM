@@ -68,13 +68,13 @@ void        Parser::ParseLine(const std::string &str, bool &hitExit)
     }
     catch (std::exception &e)
     {
-        exceptions << "Line " << line << " : Error : " << e.what() << std::endl;
+        outputStream << "Line " << line << " : Error : " << e.what() << std::endl;
     }
 }
 
-void Parser::DumpExceptions()
+void Parser::DumpOutput()
 {
-    std::cout << exceptions.str();
+    std::cout << outputStream.str();
 }
 
 void Parser::push()
@@ -100,7 +100,7 @@ void Parser::dump()
 {
 	for (int i = stack.size() - 1; i > -1; i--)
 	{
-		std::cout << stack[i]->toString() << std::endl;
+		outputStream << stack[i]->toString() << std::endl;
 	}
 }
 
@@ -211,7 +211,7 @@ void Parser::print()
             throw AssertNotTrueException();
         }
         int i = std::stoi(stack.back()->toString());
-        std::cout << static_cast<char>(i) << std::endl;
+        outputStream << static_cast<char>(i) << std::endl;
     }
     else
     {

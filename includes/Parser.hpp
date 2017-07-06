@@ -35,7 +35,7 @@ private:
     unsigned int line;
 	const IOperand *getValue();
     bool hitExit;
-    std::stringstream   exceptions;
+    std::stringstream   outputStream;
 public:
     class SyntaxErrorException : public std::exception
     {
@@ -97,5 +97,5 @@ public:
     Parser();
     ~Parser();
     void    ParseLine(const std::string &str, bool &hitExit);
-    void    DumpExceptions();
+    void    DumpOutput();
 };
