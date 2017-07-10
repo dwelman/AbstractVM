@@ -29,7 +29,7 @@ Parser::Parser()
 
 Parser::~Parser()
 {
-
+    Parser::exit();
 }
 
 void        Parser::ParseLine(const std::string &str, bool &hitExit)
@@ -222,6 +222,10 @@ void Parser::print()
 void Parser::exit()
 {
     hitExit = true;
+    for (size_t i = 0; i < stack.size(); i++)
+    {
+        delete stack[i];
+    }
 	stack.clear();
     line = 0;
 }
