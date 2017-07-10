@@ -4,13 +4,13 @@
 ;
 ; ----------------
 
-push int8(10)
+push int8(42)
 print
-assert int8(10)
-push int16(10)
-assert int8(10)
+assert int8(42)
+push int16(42)
+assert int8(42)
 pop
-assert int8(11)
+assert int8(43)
 print
-assert int8(10)
+assert int8(42)
 exit
