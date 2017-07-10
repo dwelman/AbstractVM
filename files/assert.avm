@@ -1,0 +1,16 @@
+; ----------------
+;
+; assert.avm
+;
+; ----------------
+
+push int8(10)
+print
+assert int8(10)
+push int16(10)
+assert int8(10)
+pop
+assert int8(11)
+print
+assert int8(10)
+exit
