@@ -35,6 +35,12 @@ public:
 	Operand(eOperandType _type, T _val) : val(_val), type(_type)
 	{
 		str = std::to_string(val);
+		while( (str.find(".")!= std::string::npos
+			   && str.substr( str.length() - 1, 1) == "0")
+			   || str.substr( str.length() - 1, 1) == "." )
+		{
+			str.pop_back();
+		}
 	}
 
 	Operand(Operand &src) : type(src.type), val(src.val), str(src.str)
